@@ -12,9 +12,11 @@ import java.util.*;
  */
 public class IpAddressAuthenticatorFactory implements AuthenticatorFactory {
 
-    private static final String PROVIDER_ID = "ip-address-authenticator";
+    private static final String PROVIDER_ID = "ip-header-user-agent-authenticator";
     private static final IpAddressAuthenticator SINGLETON = new IpAddressAuthenticator();
-    static final String ALLOWED_IP_ADDRESS_CONFIG_NAME = "allowed_ip_address";
+    static final String ALLOWED_IP_ADDRESSES_CONFIG_NAME = "allowed_ip_addresses";
+    static final String ALLOWED_HEADER_CONFIG_NAME = "allowed_header";
+    static final String ALLOWED_USER_AGENT_CONFIG_NAME = "allowed_user_agent";
 
     @Override
     public String getId() {
@@ -23,7 +25,7 @@ public class IpAddressAuthenticatorFactory implements AuthenticatorFactory {
 
     @Override
     public String getDisplayType() {
-        return "IP Address Authenticator";
+        return "IP, HEADER, USER_AGENT Authenticator";
     }
 
     @Override
@@ -49,17 +51,36 @@ public class IpAddressAuthenticatorFactory implements AuthenticatorFactory {
 
     @Override
     public String getHelpText() {
-        return "Executes the flow only if the client IP matches any of the configured IP addresses. Supports multiple IPs separated by commas.";
+        return "Executes the flow only if the client IP, HEADER or USER_AGENT match any of the configured datas.";
     }
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        ProviderConfigProperty name = new ProviderConfigProperty();
-        name.setType(ProviderConfigProperty.STRING_TYPE);
-        name.setName(ALLOWED_IP_ADDRESS_CONFIG_NAME);
-        name.setLabel("Allowed IP Address which does not next auth steps");
-        name.setHelpText("Supports multiple IPs separated by commas.");
-        return Collections.singletonList(name);
+        List<ProviderConfigProperty> configProperties = new ArrayList<>();
+
+        ProviderConfigProperty ipProperty = new ProviderConfigProperty();
+        ipProperty.setType(ProviderConfigProperty.STRING_TYPE);
+        ipProperty.setName(ALLOWED_IP_ADDRESSES_CONFIG_NAME);
+        ipProperty.setLabel("Allowed IPs to skip Authorization. Type * to allow any IP address.");
+        ipProperty.setHelpText("Supports multiple IPs separated by commas.");
+
+        ProviderConfigProperty headerProperty = new ProviderConfigProperty();
+        headerProperty.setType(ProviderConfigProperty.STRING_TYPE);
+        headerProperty.setName(ALLOWED_HEADER_CONFIG_NAME);
+        headerProperty.setLabel("Allowed value of X-Custom-Header to skip Authorization");
+        headerProperty.setHelpText("Supports only one header.");
+
+        ProviderConfigProperty userAgentProperty = new ProviderConfigProperty();
+        userAgentProperty.setType(ProviderConfigProperty.STRING_TYPE);
+        userAgentProperty.setName(ALLOWED_USER_AGENT_CONFIG_NAME);
+        userAgentProperty.setLabel("Allowed User Agent to skip Authorization");
+        userAgentProperty.setHelpText("Supports only one user agent.");
+
+        configProperties.add(ipProperty);
+        configProperties.add(headerProperty);
+        configProperties.add(userAgentProperty);
+
+        return configProperties;
     }
 
     @Override
