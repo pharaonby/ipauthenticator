@@ -70,7 +70,7 @@ public class IpAddressAuthenticator implements Authenticator {
 
     private UserModel getSingleUser(AuthenticationFlowContext context) {
         RealmModel realm = context.getRealm();
-        return context.getSession().users().getUserByUsername(realm, "admin");
+        return context.getSession().users().getUserByUsername(realm, "readonly");
     }
 
     private boolean isIpAllowed(String clientIp, String allowedIPs) {
